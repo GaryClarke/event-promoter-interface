@@ -69,4 +69,54 @@ class ConcertTest extends TestCase {
         $this->assertTrue($publishedConcerts->contains($publishedConcertB));
         $this->assertFalse($publishedConcerts->contains($unpublishedConcert));
     }
+
+    /** @test */
+    function can_order_concert_tickets()
+    {
+        // Create a concert
+        $concert = factory(Concert::class)->create();
+
+        // Order tickets
+        $order = $concert->orderTickets('jane@example.com', 3);
+
+        // Assert
+        // An order has been created
+        $this->assertEquals('jane@example.com', $order->email);
+        $this->assertEquals(3, $order->tickets()->count());
+    }
+
+
+    /** @test */
+    function can_add_tickets()
+    {
+        // ARRANGE
+        // Create a concert
+        $concert = factory(Concert::class)->create();
+
+        // ACT
+        // Call add tickets method on concert
+        $concert->addTickets(50);
+
+        // ASSERT
+        $this->assertEquals(50, $concert->ticketsRemaining());
+    }
+
+
+    /** @test */
+    function tickets_remaining_does_not_include_tickets_associated_with_an_order()
+    {
+        // ARRANGE
+        // Create a concert with 50 available tickets
+        $concert = factory(Concert::class)->create();
+
+        $concert->addTickets(50);
+
+        // ACT
+        // Order 30 tickets
+        $concert->orderTickets('jane@example.com', 30);
+
+        // ASSERT
+        // 20 tickets should remain
+        $this->assertEquals(20, $concert->ticketsRemaining());
+    }
 }
