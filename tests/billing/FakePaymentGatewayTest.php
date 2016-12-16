@@ -19,7 +19,8 @@ class FakePaymentGatewayTest extends TestCase {
     /** @test */
     function charges_with_an_invalid_payment_token_fail()
     {
-        try {
+        try
+        {
 
             // ARRANGE
             // Fake payment gateway
@@ -29,7 +30,8 @@ class FakePaymentGatewayTest extends TestCase {
             // Charge
             $paymentGateway->charge(2500, 'invalid-payment-token');
 
-        } catch (PaymentFailedException $exception) {
+        } catch (PaymentFailedException $exception)
+        {
 
             return;
         }
@@ -38,4 +40,34 @@ class FakePaymentGatewayTest extends TestCase {
         // If a paymentFailedException is not caught the test fails
         $this->fail('A PaymentFailedException was expected to be thrown / caught');
     }
+
+
+    /** @test */
+    function running_a_hook_before_the_first_charge()
+    {
+        // ARRANGE
+        // Payment gateway
+        $paymentGateway = new FakePaymentGateway;
+
+        $timesCallbackRan = 0;
+
+        $paymentGateway->beforeFirstCharge(function ($paymentGateway) use (&$timesCallbackRan)
+        {
+            $timesCallbackRan++;
+            $paymentGateway->charge(2500, $paymentGateway->getValidTestToken());
+            $this->assertEquals(2500, $paymentGateway->totalCharges());
+        });
+
+        // ACT
+        // Charge 2500
+        $paymentGateway->charge(2500, $paymentGateway->getValidTestToken());
+
+        // ASSERT
+        // Callback ran
+        $this->assertEquals(1, $timesCallbackRan);
+
+        // 2500 charged
+        $this->assertEquals(5000, $paymentGateway->totalCharges());
+    }
+
 }

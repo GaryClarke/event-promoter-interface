@@ -75,8 +75,7 @@ class ConcertTest extends TestCase {
     function can_order_concert_tickets()
     {
         // Create a concert
-        $concert = factory(Concert::class)->create();
-        $concert->addTickets(3);
+        $concert = factory(Concert::class)->create()->addTickets(3);
 
         // Order tickets
         $order = $concert->orderTickets('jane@example.com', 3);
@@ -84,7 +83,7 @@ class ConcertTest extends TestCase {
         // Assert
         // An order has been created
         $this->assertEquals('jane@example.com', $order->email);
-        $this->assertEquals(3, $order->tickets()->count());
+        $this->assertEquals(3, $order->ticketQuantity());
     }
 
 
@@ -109,9 +108,7 @@ class ConcertTest extends TestCase {
     {
         // ARRANGE
         // Create a concert with 50 available tickets
-        $concert = factory(Concert::class)->create();
-
-        $concert->addTickets(50);
+        $concert = factory(Concert::class)->create()->addTickets(50);
 
         // ACT
         // Order 30 tickets
@@ -128,9 +125,7 @@ class ConcertTest extends TestCase {
     {
         // ARRANGE
         // Create a concert with 10 available tickets
-        $concert = factory(Concert::class)->create();
-
-        $concert->addTickets(10);
+        $concert = factory(Concert::class)->create()->addTickets(10);
 
         // ACT
         // Try to order more than 10 tickets
@@ -140,8 +135,7 @@ class ConcertTest extends TestCase {
 
         } catch (NotEnoughTicketsException $notEnoughTicketsException)
         {
-            $order = $concert->orders()->where('email', 'jane@example.com')->first();
-            $this->assertNull($order);
+            $this->assertFalse($concert->hasOrderFor('jane@example.com'));
             $this->assertEquals(10, $concert->ticketsRemaining());
 
             return;
@@ -156,9 +150,7 @@ class ConcertTest extends TestCase {
     {
         // ARRANGE
         // Create a concert with 10 available tickets
-        $concert = factory(Concert::class)->create();
-
-        $concert->addTickets(10);
+        $concert = factory(Concert::class)->create()->addTickets(10);
 
         // 8 tickets are purchased
         $concert->orderTickets('jane@example.com', 8);
@@ -171,13 +163,90 @@ class ConcertTest extends TestCase {
 
         } catch (NotEnoughTicketsException $notEnoughTicketsException)
         {
-            $johnsOrder = $concert->orders()->where('email', 'john@example.com')->first();
-            $this->assertNull($johnsOrder);
+            $this->assertFalse($concert->hasOrderFor('john@example.com'));
             $this->assertEquals(2, $concert->ticketsRemaining());
 
             return;
         }
 
         $this->fail('Order succeeded even though there were not enough tickets remaining');
+    }
+
+
+    /** @test */
+    function can_reserve_available_tickets()
+    {
+        // Create a concert
+        $concert = factory(Concert::class)->create()->addTickets(3);
+
+        // Interim tickets remaining check
+        $this->assertEquals(3, $concert->ticketsRemaining());
+
+        // ACT
+        // Reserve 2 tickets
+        $reservedTickets = $concert->reserveTickets(2);
+
+        // ASSERT
+        // 2 tickets reserved
+        $this->assertCount(2, $reservedTickets);
+
+        // 1 ticket remains
+        $this->assertEquals(1, $concert->ticketsRemaining());
+    }
+
+
+    /** @test */
+    function cannot_reserve_tickets_that_have_already_been_purchsed()
+    {
+        // ARRANGE
+        // Create a concert with 3 tickets
+        $concert = factory(Concert::class)->create()->addTickets(3);
+
+        // Order 2 of the tickets
+        $concert->orderTickets('jane@example.com', 2);
+
+        // ACT
+        try {
+
+            // Try to reserve 2 tickets
+            $concert->reserveTickets(2);
+
+        } catch (NotEnoughTicketsException $notEnoughTicketsException)
+        {
+            $this->assertEquals(1, $concert->ticketsRemaining());
+
+            // Return early to bypass the fail call
+            return;
+        }
+
+        $this->fail('Reserving tickets succeeded even though the tickets were already sold');
+    }
+
+
+    /** @test */
+    function cannot_reserve_tickets_that_have_already_been_reserved()
+    {
+        // ARRANGE
+        // Create a concert with 3 tickets
+        $concert = factory(Concert::class)->create()->addTickets(3);
+
+        // Order 2 of the tickets
+        $concert->reserveTickets(2);
+
+        // ACT
+        try {
+
+            // Try to reserve 2 tickets
+            $concert->reserveTickets(2);
+
+        } catch (NotEnoughTicketsException $notEnoughTicketsException)
+        {
+            $this->assertEquals(1, $concert->ticketsRemaining());
+
+            // Return early to bypass the fail call
+            return;
+        }
+
+        $this->fail('Reserving tickets succeeded even though the tickets were already reserved');
     }
 }
