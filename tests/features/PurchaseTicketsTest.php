@@ -141,6 +141,7 @@ class PurchaseTicketsTest extends TestCase {
 
         // An order has not been created
         $this->assertFalse($concert->hasOrderFor('john@example.com'));
+        $this->assertEquals(3, $concert->ticketsRemaining());
     }
 
 

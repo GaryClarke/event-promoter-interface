@@ -184,11 +184,14 @@ class ConcertTest extends TestCase {
 
         // ACT
         // Reserve 2 tickets
-        $reservedTickets = $concert->reserveTickets(2);
+        $reservation = $concert->reserveTickets(2, 'john@example.com');
 
         // ASSERT
         // 2 tickets reserved
-        $this->assertCount(2, $reservedTickets);
+        $this->assertCount(2, $reservation->tickets());
+
+        // Reserver email can be retrieved
+        $this->assertEquals('john@example.com', $reservation->email());
 
         // 1 ticket remains
         $this->assertEquals(1, $concert->ticketsRemaining());
@@ -209,7 +212,7 @@ class ConcertTest extends TestCase {
         try {
 
             // Try to reserve 2 tickets
-            $concert->reserveTickets(2);
+            $concert->reserveTickets(2, 'john@example.com');
 
         } catch (NotEnoughTicketsException $notEnoughTicketsException)
         {
@@ -231,13 +234,13 @@ class ConcertTest extends TestCase {
         $concert = factory(Concert::class)->create()->addTickets(3);
 
         // Order 2 of the tickets
-        $concert->reserveTickets(2);
+        $concert->reserveTickets(2, 'john@example.com');
 
         // ACT
         try {
 
             // Try to reserve 2 tickets
-            $concert->reserveTickets(2);
+            $concert->reserveTickets(2, 'jane@example.com');
 
         } catch (NotEnoughTicketsException $notEnoughTicketsException)
         {

@@ -2,6 +2,7 @@
 
 use App\Concert;
 use App\Ticket;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class TicketTest extends TestCase {
@@ -30,33 +31,18 @@ class TicketTest extends TestCase {
     function a_ticket_can_be_released()
     {
         // ARRANGE
-        // Concert with at least one ticket
-        $concert = factory(Concert::class)->create();
-        $concert->addTickets(1);
+        // Create a reserved ticket
+        $ticket = factory(Ticket::class)->states('reserved')->create();
 
-        // An order and a ticket
-        $order = $concert->orderTickets('jane@example.com', 1);
-        $ticket = $order->tickets()->first();
-
-        // Interim order / ticket relation test
-        $this->assertEquals($order->id, $ticket->order_id);
-
-        $this->seeInDatabase('tickets', [
-            'order_id' => $order->id
-        ]);
-
+        // Interim reserved status check
+        $this->assertNotNull($ticket->reserved_at);
 
         // ACT
         // Release the ticket
         $ticket->release();
 
         // ASSERT
-        // The ticket no longer belongs to an order
-        $this->assertNull($ticket->fresh()->order_id);
-
-        $this->notSeeInDatabase('tickets', [
-            'order_id' => $order->id
-        ]);
-
+        // Ticket released i.e. reserved_at set to null
+        $this->assertNull($ticket->fresh()->reserved_at);
     }
 }

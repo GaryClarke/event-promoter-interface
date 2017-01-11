@@ -62,20 +62,6 @@ class Order extends Model {
 
 
     /**
-     * Cancel an order
-     */
-    public function cancel()
-    {
-        foreach ($this->tickets as $ticket)
-        {
-            $ticket->release();
-        }
-
-        $this->delete();
-    }
-
-
-    /**
      * Convert the order to an array
      *
      * @return array
@@ -88,9 +74,4 @@ class Order extends Model {
             'amount'          => $this->amount
         ];
     }
-
-
-
-
-
 }

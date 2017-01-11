@@ -11,6 +11,7 @@
 |
 */
 
+
 use Carbon\Carbon;
 
 $factory->define(App\User::class, function (Faker\Generator $faker)
@@ -63,5 +64,12 @@ $factory->define(App\Ticket::class, function (Faker\Generator $faker)
         {
             return factory(App\Concert::class)->create()->id;
         }
+    ];
+});
+
+$factory->state(App\Ticket::class, 'reserved', function() {
+
+    return [
+        'reserved_at' => Carbon::parse('-1 day')
     ];
 });
