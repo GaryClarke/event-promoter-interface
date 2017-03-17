@@ -1,5 +1,7 @@
 <?php
 
+use App\Billing\PaymentFailedException;
+
 trait PaymentGatewayContractTests {
 
     abstract protected function getPaymentGateway();
@@ -44,5 +46,35 @@ trait PaymentGatewayContractTests {
 
         // Verify that the charge was completed successfully
         $this->assertEquals(2500, $newCharges->sum());
+    }
+
+
+    /** @test */
+    function charges_with_an_invalid_payment_token_fail()
+    {
+        // ARRANGE
+        // Payment gateway
+        $paymentGateway = $this->getPaymentGateway();
+
+        // ACT
+        // Charge
+        $newCharges = $paymentGateway->newChargesDuring(function ($paymentGateway)
+        {
+            try
+            {
+                $paymentGateway->charge(2500, 'invalid-payment-token');
+
+            } catch (PaymentFailedException $exception)
+            {
+                return;
+            }
+
+            // If a paymentFailedException is not caught the test fails
+            $this->fail('Charging with an invalid payment token did not throw a payment failed exception');
+        });
+
+        // ASSERT
+        // No charges have been made
+        $this->assertCount(0, $newCharges);
     }
 }

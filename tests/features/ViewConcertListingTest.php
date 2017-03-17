@@ -28,18 +28,19 @@ class ViewConcertListingTest extends TestCase {
 
         // Act
         // View the concert listing
-        $this->visit('/concerts/' . $concert->id);
+        $response = $this->get('/concerts/' . $concert->id);
 
         // Assert
-        $this->see('The Red Chord');
-        $this->see('with Animosity and Lethargy');
-        $this->see('December 13, 2016');
-        $this->see('8:00pm');
-        $this->see('32.50');
-        $this->see('The Mosh Pit');
-        $this->see('123 Example Lane');
-        $this->see('Laraville, ON 17916');
-        $this->see('For tickets, call (555) 555-5555');
+        $response->assertSee('The Red Chord');
+        $response->assertSee('with Animosity and Lethargy');
+        $response->assertSee('December 13, 2016');
+        $response->assertSee('8:00pm');
+        $response->assertSee('32.50');
+        $response->assertSee('The Mosh Pit');
+        $response->assertSee('123 Example Lane');
+        $response->assertSee('Laraville, ON 17916');
+        $response->assertSee('For tickets, call (555) 555-5555');
+        $response->assertStatus(200);
     }
 
 
@@ -51,11 +52,11 @@ class ViewConcertListingTest extends TestCase {
 
         // Act
         // View the concert listing
-        $this->get('/concerts/' . $concert->id);
+        $response = $this->get('/concerts/' . $concert->id);
 
         // Assert
         // 404 received - not viewable
-        $this->assertResponseStatus(404);
+        $response->assertStatus(404);
     }
 
 }

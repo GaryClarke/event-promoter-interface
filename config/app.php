@@ -26,6 +26,7 @@ return [
     */
 
     'env' => env('APP_ENV', 'production'),
+//    'env' => 'testing',
 
     /*
     |--------------------------------------------------------------------------
@@ -166,6 +167,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Zondicons\ZondiconsServiceProvider::class,
 
         //
 
