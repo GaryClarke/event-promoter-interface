@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\OrderConfirmationNumber;
 
 class Order extends Model {
 
@@ -13,8 +14,9 @@ class Order extends Model {
     {
         // Create and return order
         $order = self::create([
-            'email'      => $email,
-            'amount'     => $amount
+            'confirmation_number' => OrderConfirmationNumber::generate(),
+            'email'               => $email,
+            'amount'              => $amount
         ]);
 
         foreach ($tickets as $ticket)
@@ -69,9 +71,16 @@ class Order extends Model {
     public function toArray()
     {
         return [
-            'email'           => $this->email,
-            'ticket_quantity' => $this->ticketQuantity(),
-            'amount'          => $this->amount
+            'confirmation_number' => $this->confirmation_number,
+            'email'               => $this->email,
+            'ticket_quantity'     => $this->ticketQuantity(),
+            'amount'              => $this->amount
         ];
+    }
+
+
+    public static function findByConfirmationNumber($confirmationNumber)
+    {
+        return self::where('confirmation_number', $confirmationNumber)->firstOrFail();
     }
 }

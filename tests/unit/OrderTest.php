@@ -5,6 +5,7 @@ use App\Concert;
 use App\Order;
 use App\Reservation;
 use App\Ticket;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class OrderTest extends TestCase {
@@ -42,14 +43,50 @@ class OrderTest extends TestCase {
 
 
     /** @test */
+    function retrieving_an_order_by_confirmation_number()
+    {
+        // ARRANGE
+        $order = factory(Order::class)->create([
+            'confirmation_number' => 'ORDERCONFORMATION1234'
+        ]);
+
+        // ACT
+        // Call the find bu confirmation number method
+        $foundOrder = Order::findByConfirmationNumber('ORDERCONFORMATION1234');
+
+        // ASSERT
+        $this->assertEquals($order->id, $foundOrder->id);
+    }
+
+
+    /** @test */
+    function retrieving_a_nonexistent_order_by_confirmation_number_throws_an_exception()
+    {
+        try
+        {
+            Order::findByConfirmationNumber('NONEXISTENETCONFIRMATIONNUMBER');
+
+        } catch (ModelNotFoundException $modelNotFoundException)
+        {
+            return;
+        }
+
+        $this->fail('An exception was not thrown despite a matching order not being found');
+    }
+
+
+    /** @test */
     function converts_order_to_an_array()
     {
         // ARRANGE
-        // Concert with tickets
-        $concert = factory(Concert::class)->create(['ticket_price' => 1200])->addTickets(5);
+        // An order for 5 tickets
+        $order = factory(Order::class)->create([
+            'confirmation_number' => 'ORDERCONFIRMATION1234',
+            'email'               => 'jane@example.com',
+            'amount'              => 6000
+        ]);
 
-        // An order
-        $order = $concert->orderTickets('jane@example.com', 5);
+        $order->tickets()->saveMany(factory(Ticket::class)->times(5)->create());
 
         // ACT
         // Convert the order to an array
@@ -58,9 +95,10 @@ class OrderTest extends TestCase {
         // ASSERT
         // The order has been converted to an array
         $this->assertEquals([
-            'email'           => 'jane@example.com',
-            'ticket_quantity' => 5,
-            'amount'          => 6000
+            'confirmation_number' => 'ORDERCONFIRMATION1234',
+            'email'               => 'jane@example.com',
+            'ticket_quantity'     => 5,
+            'amount'              => 6000
         ], $result);
     }
 }

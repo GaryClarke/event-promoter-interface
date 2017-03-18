@@ -1868,7 +1868,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = {
     props: ['price', 'concertTitle', 'concertId'],
@@ -20379,9 +20378,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "text-right"
   }, [_c('button', {
     staticClass: "btn btn-primary btn-block",
-    class: {
-      'btn-loading': _vm.processing
-    },
     attrs: {
       "disabled": _vm.processing
     },

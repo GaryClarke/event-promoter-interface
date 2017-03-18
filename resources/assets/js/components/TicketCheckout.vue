@@ -23,7 +23,6 @@
         <div class="text-right">
             <button class="btn btn-primary btn-block"
                 @click="openStripe"
-                :class="{ 'btn-loading': processing }"
                 :disabled="processing"
             >
                 Buy Tickets
@@ -88,7 +87,7 @@
                 })
             },
             purchaseTickets(token) {
-                this.processing = true
+                this.processing = true;
 
                 axios.post(`/concerts/${this.concertId}/orders`, {
                     email: token.email,

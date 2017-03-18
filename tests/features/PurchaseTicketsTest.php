@@ -3,6 +3,7 @@
 use App\Billing\FakePaymentGateway;
 use App\Billing\PaymentGateway;
 use App\Concert;
+use App\OrderConfirmationNumberGenerator;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class PurchaseTicketsTest extends TestCase {
@@ -71,6 +72,12 @@ class PurchaseTicketsTest extends TestCase {
     {
         $this->disableExceptionHandling();
 
+        $orderConfirmationNumberGenerator = Mockery::mock(OrderConfirmationNumberGenerator::class, [
+            'generate' => 'ORDERCONFIRMATION1234'
+        ]);
+
+        $this->app->instance(OrderConfirmationNumberGenerator::class, $orderConfirmationNumberGenerator);
+
         // ARRANGE
         // Create a concert
         $concert = factory(Concert::class)->states('published')->create([
@@ -90,9 +97,10 @@ class PurchaseTicketsTest extends TestCase {
         $this->assertResponseStatus(201);
 
         $this->seeJsonSubset([
-            'email'           => 'john@example.com',
-            'ticket_quantity' => 3,
-            'amount'   => 9750
+            'confirmation_number' => 'ORDERCONFIRMATION1234',
+            'email'               => 'john@example.com',
+            'ticket_quantity'     => 3,
+            'amount'              => 9750
         ]);
 
         // ASSERT
@@ -205,7 +213,8 @@ class PurchaseTicketsTest extends TestCase {
         ])->addTickets(3);
 
         // Make a prior order request
-        $this->paymentGateway->beforeFirstCharge(function($paymentGateway) use ($concert) {
+        $this->paymentGateway->beforeFirstCharge(function ($paymentGateway) use ($concert)
+        {
 
             $this->orderTickets($concert, [
                 'email'           => 'personB@example.com',

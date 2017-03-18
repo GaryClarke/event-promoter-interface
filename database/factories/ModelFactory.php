@@ -67,9 +67,18 @@ $factory->define(App\Ticket::class, function (Faker\Generator $faker)
     ];
 });
 
-$factory->state(App\Ticket::class, 'reserved', function() {
+$factory->state(App\Ticket::class, 'reserved', function ()
+{
 
     return [
         'reserved_at' => Carbon::parse('-1 day')
+    ];
+});
+
+$factory->define(App\Order::class, function (Faker\Generator $faker)
+{
+    return [
+        'amount' => 5250,
+        'email'  => $faker->email
     ];
 });
