@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Billing\Charge;
 use App\Concert;
 use App\Order;
 use App\Reservation;
@@ -14,18 +15,17 @@ class OrderTest extends TestCase {
 
 
     /** @test */
-    function creating_an_order_from_tickets_and_email_and_amount()
+    function creating_an_order_from_tickets_and_email_and_charge()
     {
         // ARRANGE
-        // Concert with tickets
-        $concert = factory(Concert::class)->create()->addTickets(5);
+        // 3 tickets
+        $tickets = factory(Ticket::class, 3)->create();
 
-        // Interim check that 5 tickets remin before order
-        $this->assertEquals(5, $concert->ticketsRemaining());
+        $charge = new Charge(['amount' => 3600, 'card_last_four' => '1234']);
 
         // ACT
         // Create the ticket order
-        $order = Order::forTickets($concert->findTickets(3), 'john@example.com', 3600);
+        $order = Order::forTickets($tickets, 'john@example.com', $charge);
 
         // ASSERT
         // Order contains customer email
@@ -37,8 +37,8 @@ class OrderTest extends TestCase {
         // Order contains the correct amount
         $this->assertEquals(3600, $order->amount);
 
-        // 2 tickets remain
-        $this->assertEquals(2, $concert->ticketsRemaining());
+        // Order contains correct card last 4
+        $this->assertEquals('1234', $order->card_last_four);
     }
 
 

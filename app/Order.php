@@ -10,19 +10,17 @@ class Order extends Model {
     protected $guarded = [];
 
 
-    public static function forTickets($tickets, $email, $amount)
+    public static function forTickets($tickets, $email, $charge)
     {
         // Create and return order
         $order = self::create([
             'confirmation_number' => OrderConfirmationNumber::generate(),
             'email'               => $email,
-            'amount'              => $amount
+            'amount'              => $charge->amount(),
+            'card_last_four' => $charge->cardLastFour()
         ]);
 
-        foreach ($tickets as $ticket)
-        {
-            $order->tickets()->save($ticket);
-        }
+        $order->tickets()->saveMany($tickets);
 
         return $order;
     }
