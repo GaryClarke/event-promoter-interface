@@ -44,7 +44,7 @@ class StripePaymentGateway implements PaymentGateway {
 
 
     /**
-     * Get a valid test token...duh
+     * Get a valid test token
      *
      * @param $cardNumber
      * @return string

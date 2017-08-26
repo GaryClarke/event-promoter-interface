@@ -3,6 +3,7 @@
 use App\Billing\FakePaymentGateway;
 use App\Billing\PaymentGateway;
 use App\Concert;
+use App\Facades\OrderConfirmationNumber;
 use App\OrderConfirmationNumberGenerator;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
@@ -72,11 +73,7 @@ class PurchaseTicketsTest extends TestCase {
     {
         $this->disableExceptionHandling();
 
-        $orderConfirmationNumberGenerator = Mockery::mock(OrderConfirmationNumberGenerator::class, [
-            'generate' => 'ORDERCONFIRMATION1234'
-        ]);
-
-        $this->app->instance(OrderConfirmationNumberGenerator::class, $orderConfirmationNumberGenerator);
+        OrderConfirmationNumber::shouldReceive('generate')->andReturn('ORDERCONFIRMATION1234');
 
         // ARRANGE
         // Create a concert
@@ -99,8 +96,12 @@ class PurchaseTicketsTest extends TestCase {
         $this->seeJsonSubset([
             'confirmation_number' => 'ORDERCONFIRMATION1234',
             'email'               => 'john@example.com',
-            'ticket_quantity'     => 3,
-            'amount'              => 9750
+            'amount'              => 9750,
+            'tickets' => [
+                ['code' => 'TICKETCODE1'],
+                ['code' => 'TICKETCODE2'],
+                ['code' => 'TICKETCODE3'],
+            ]
         ]);
 
         // ASSERT

@@ -4,12 +4,21 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\OrderConfirmationNumber;
+use Illuminate\Support\Collection;
 
 class Order extends Model {
 
     protected $guarded = [];
 
 
+    /**
+     * Create an order from a Collection of tickets
+     *
+     * @param Collection $tickets
+     * @param $email
+     * @param $charge
+     * @return mixed
+     */
     public static function forTickets($tickets, $email, $charge)
     {
         // Create and return order
@@ -17,10 +26,10 @@ class Order extends Model {
             'confirmation_number' => OrderConfirmationNumber::generate(),
             'email'               => $email,
             'amount'              => $charge->amount(),
-            'card_last_four' => $charge->cardLastFour()
+            'card_last_four'      => $charge->cardLastFour()
         ]);
 
-        $order->tickets()->saveMany($tickets);
+        $tickets->each->claimFor($order);
 
         return $order;
     }
@@ -71,8 +80,11 @@ class Order extends Model {
         return [
             'confirmation_number' => $this->confirmation_number,
             'email'               => $this->email,
-            'ticket_quantity'     => $this->ticketQuantity(),
-            'amount'              => $this->amount
+            'amount'              => $this->amount,
+            'tickets'             => $this->tickets->map(function($ticket) {
+
+                return ['code' => $ticket->code];
+            })->all(),
         ];
     }
 
