@@ -9,7 +9,8 @@
         "laravel/framework": "5.4.*",
         "zondicons/blade-bridge": "^0.1.0",
         "stripe/stripe-php": "^4.3",
-        "laravel/browser-kit-testing": "^1.0"
+        "laravel/browser-kit-testing": "^1.0",
+        "hashids/hashids": "^2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
