@@ -4,8 +4,11 @@ use App\Billing\FakePaymentGateway;
 use App\Billing\PaymentGateway;
 use App\Concert;
 use App\Facades\OrderConfirmationNumber;
+use App\Facades\TicketCode;
+use App\Mail\OrderConfirmationEmail;
 use App\OrderConfirmationNumberGenerator;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Mail;
 
 class PurchaseTicketsTest extends TestCase {
 
@@ -73,7 +76,11 @@ class PurchaseTicketsTest extends TestCase {
     {
         $this->disableExceptionHandling();
 
+        Mail::fake();
+
         OrderConfirmationNumber::shouldReceive('generate')->andReturn('ORDERCONFIRMATION1234');
+
+        TicketCode::shouldReceive('generateFor')->andReturn('TICKETCODE1', 'TICKETCODE2', 'TICKETCODE3');
 
         // ARRANGE
         // Create a concert
@@ -111,8 +118,16 @@ class PurchaseTicketsTest extends TestCase {
         // Make sure that the order exists for the customer
         $this->assertTrue($concert->hasOrderFor('john@example.com'));
 
+        $order = $concert->ordersFor('john@example.com')->first();
+
         // And that the order ticket-count is 3
-        $this->assertEquals(3, $concert->ordersFor('john@example.com')->first()->ticketQuantity());
+        $this->assertEquals(3, $order->ticketQuantity());
+
+        // An order confirmation email was sent
+        Mail::assertSent(OrderConfirmationEmail::class, function($mail) use ($order) {
+            return $mail->hasTo('john@example.com')
+                && $mail->order->id == $order->id;
+        });
     }
 
 

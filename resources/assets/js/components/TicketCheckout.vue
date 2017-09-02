@@ -94,9 +94,9 @@
                     ticket_quantity: this.quantity,
                     payment_token: token.id,
                 }).then(response => {
-                    console.log("Charge succeeded")
+                    window.location = `/orders/${response.data.confirmation_number}`;
                 }).catch(response => {
-                    this.processing = false
+                    this.processing = false;
                 })
             }
         },

@@ -1930,7 +1930,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 ticket_quantity: this.quantity,
                 payment_token: token.id
             }).then(function (response) {
-                console.log("Charge succeeded");
+                window.location = '/orders/' + response.data.confirmation_number;
             }).catch(function (response) {
                 _this.processing = false;
             });
