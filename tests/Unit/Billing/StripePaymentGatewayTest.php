@@ -1,6 +1,8 @@
 <?php
 
-use App\Billing\PaymentFailedException;
+namespace Tests\Unit\Billing;
+
+use Tests\TestCase;
 use App\Billing\StripePaymentGateway;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 

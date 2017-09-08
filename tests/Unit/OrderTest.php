@@ -1,5 +1,6 @@
 <?php
 
+namespace Tests\Unit;
 
 use App\Billing\Charge;
 use App\Concert;
@@ -8,6 +9,8 @@ use App\Reservation;
 use App\Ticket;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Mockery;
+use Tests\TestCase;
 
 class OrderTest extends TestCase {
 

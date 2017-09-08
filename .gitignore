@@ -2,7 +2,7 @@
 /node_modules
 Homestead.yaml
 .env
-.env.production
+.env.*
 _ide_helper.php
 .env.example
 .idea

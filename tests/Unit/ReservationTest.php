@@ -1,10 +1,14 @@
 <?php
 
+namespace Tests\Unit;
+
 use App\Billing\FakePaymentGateway;
 use App\Concert;
 use App\Reservation;
 use App\Ticket;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Mockery;
+use Tests\TestCase;
 
 class ReservationTest extends TestCase {
 

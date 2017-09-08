@@ -1,14 +1,17 @@
 <?php
 
-use App\Billing\FakePaymentGateway;
-use App\Billing\PaymentGateway;
+namespace Tests\Feature;
+
 use App\Concert;
-use App\Facades\OrderConfirmationNumber;
+use Tests\TestCase;
 use App\Facades\TicketCode;
+use App\Billing\PaymentGateway;
+use App\Billing\FakePaymentGateway;
 use App\Mail\OrderConfirmationEmail;
-use App\OrderConfirmationNumberGenerator;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Mail;
+use App\Facades\OrderConfirmationNumber;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+
 
 class PurchaseTicketsTest extends TestCase {
 
@@ -26,6 +29,8 @@ class PurchaseTicketsTest extends TestCase {
         $this->paymentGateway = new FakePaymentGateway;
 
         $this->app->instance(PaymentGateway::class, $this->paymentGateway);
+
+        Mail::fake();
     }
 
     /**

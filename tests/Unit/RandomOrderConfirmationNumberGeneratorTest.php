@@ -1,6 +1,9 @@
 <?php
 
+namespace Tests\Unit;
+
 use App\RandomOrderConfirmationNumberGenerator;
+use Tests\TestCase;
 
 class RandomOrderConfirmationNumberGeneratorTest extends TestCase {
 
