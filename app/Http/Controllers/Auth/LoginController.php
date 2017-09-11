@@ -10,6 +10,17 @@ class LoginController extends Controller
 {
 
     /**
+     * Get the login page
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getLogin()
+    {
+        return view('auth.login');
+    }
+
+
+    /**
      * Attempt to login a user
      *
      * @return LoginController|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
