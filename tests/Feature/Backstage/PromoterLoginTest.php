@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Backstage;
 
 use Auth;
 use App\User;
@@ -31,7 +31,7 @@ class PromoterLoginTest extends TestCase {
         ]);
 
         // User is redirected to the correct endpoint
-        $response->assertRedirect('/backstage/concerts');
+        $response->assertRedirect('/backstage/concerts/new');
 
         // ASSERT
         // There is an auth user
@@ -63,12 +63,21 @@ class PromoterLoginTest extends TestCase {
 
         // User is redirected to the correct endpoint
         $response->assertRedirect('/login');
-
-        // Session errors
         $response->assertSessionHasErrors('email');
+        $this->assertTrue(session()->hasOldInput('email'));
+        $this->assertFalse(session()->hasOldInput('password'));
+        $this->assertFalse(Auth::check());
+    }
 
-        // ASSERT
-        // There is an auth user
+
+    /** @test */
+    function logging_out_the_current_user()
+    {
+        Auth::login(factory(User::class)->create());
+
+        $response = $this->post('/logout');
+
+        $response->assertRedirect('/login');
         $this->assertFalse(Auth::check());
     }
 

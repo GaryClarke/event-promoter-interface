@@ -29,11 +29,23 @@ class LoginController extends Controller
     {
         if (!Auth::attempt(request(['email', 'password']))) {
 
-            return redirect('/login')->withErrors([
+            return redirect('/login')->withInput(request(['email']))->withErrors([
                 'email' => ['These credentials do not match our records.'],
             ]);
         }
 
-        return redirect('/backstage/concerts');
+        return redirect('/backstage/concerts/new');
+    }
+
+
+    /**
+     * Log the user out
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/login');
     }
 }
