@@ -12,6 +12,18 @@ class Concert extends Model {
     protected $dates = ['date'];
 
 
+    /**************************************** RELATIONSHIPS ****************************************/
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+
+
+
+
     /**************************************** GETTERS ****************************************/
 
     /**

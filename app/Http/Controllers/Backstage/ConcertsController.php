@@ -39,7 +39,7 @@ class ConcertsController extends Controller {
             'ticket_quantity' => ['required', 'numeric', 'min:1']
         ]);
 
-        $concert = Concert::create([
+        $concert = auth()->user()->concerts()->create([
             'title'                  => request('title'),
             'subtitle'               => request('subtitle'),
             'date'                   => Carbon::parse(vsprintf('%s %s', [request('date'), request('time')])),

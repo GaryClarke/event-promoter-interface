@@ -26,4 +26,19 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+
+    /**************************************** RELATIONS ****************************************/
+
+    /**
+     * A user can have many concerts
+     *
+     * User in this case being a concert promoter
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function concerts()
+    {
+        return $this->hasMany(Concert::class);
+    }
 }
