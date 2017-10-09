@@ -11,19 +11,6 @@ class Concert extends Model {
 
     protected $dates = ['date'];
 
-
-    /**************************************** RELATIONSHIPS ****************************************/
-
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-
-
-
-
     /**************************************** GETTERS ****************************************/
 
     /**
@@ -58,7 +45,20 @@ class Concert extends Model {
         return number_format($this->ticket_price / 100, 2);
     }
 
+
     /**************************************** RELATIONS ****************************************/
+
+    /**
+     * A concert belongs to a user
+     *
+     * In this instance the concert promoter / publisher
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
 
     /**
@@ -187,5 +187,25 @@ class Concert extends Model {
     public function scopePublished($query)
     {
         return $query->whereNotNull('published_at');
+    }
+
+
+    /**
+     * Check whether a concert has been published
+     *
+     * @return bool
+     */
+    public function isPublished()
+    {
+        return $this->published_at !== null;
+    }
+
+
+    /**
+     * Publish a concert
+     */
+    public function publish()
+    {
+        $this->update(['published_at' => $this->freshTimestamp()]);
     }
 }

@@ -61,5 +61,4 @@ class ViewConcertListingTest extends TestCase {
         // 404 received - not viewable
         $response->assertStatus(404);
     }
-
 }

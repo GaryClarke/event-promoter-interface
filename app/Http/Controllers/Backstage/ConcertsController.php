@@ -4,9 +4,20 @@ namespace App\Http\Controllers\Backstage;
 
 use App\Concert;
 use App\Http\Controllers\Controller;
+use Auth;
 use Carbon\Carbon;
 
 class ConcertsController extends Controller {
+
+    /**
+     * Display a list of the signed-in promoters concerts
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index()
+    {
+        return view('backstage.concerts.index', ['concerts' => Auth::user()->concerts]);
+    }
 
     /**
      * Display the create concerts form
@@ -49,9 +60,11 @@ class ConcertsController extends Controller {
             'city'                   => request('city'),
             'state'                  => request('state'),
             'zip'                    => request('zip'),
-            'additional_information' => request('additional_information')
+            'additional_information' => request('additional_information'),
 
         ])->addTickets(request('ticket_quantity'));
+
+        $concert->publish();
 
         return redirect()->route('concerts.show', $concert);
     }
