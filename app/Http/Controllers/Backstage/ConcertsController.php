@@ -53,15 +53,17 @@ class ConcertsController extends Controller {
         $concert = auth()->user()->concerts()->create([
             'title'                  => request('title'),
             'subtitle'               => request('subtitle'),
-            'date'                   => Carbon::parse(vsprintf('%s %s', [request('date'), request('time')])),
-            'ticket_price'           => bcmul(request('ticket_price'), 100),
+            'additional_information' => request('additional_information'),
+            'date'                   => Carbon::parse(vsprintf('%s %s', [
+                request('date'),
+                request('time')
+            ])),
             'venue'                  => request('venue'),
             'venue_address'          => request('venue_address'),
             'city'                   => request('city'),
             'state'                  => request('state'),
             'zip'                    => request('zip'),
-            'additional_information' => request('additional_information'),
-
+            'ticket_price'           => request('ticket_price') * 100,
         ])->addTickets(request('ticket_quantity'));
 
         $concert->publish();
@@ -83,7 +85,37 @@ class ConcertsController extends Controller {
         abort_if($concert->isPublished(), 403);
 
         return view('backstage.concerts.edit', [
-           'concert' => $concert
+            'concert' => $concert
         ]);
+    }
+
+
+    /**
+     * Update concert details
+     *
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update($id)
+    {
+        $concert = auth()->user()->concerts()->findOrFail($id);
+
+        $concert->update([
+            'title'                  => request('title'),
+            'subtitle'               => request('subtitle'),
+            'additional_information' => request('additional_information'),
+            'date'                   => Carbon::parse(vsprintf('%s %s', [
+                request('date'),
+                request('time')
+            ])),
+            'venue'                  => request('venue'),
+            'venue_address'          => request('venue_address'),
+            'city'                   => request('city'),
+            'state'                  => request('state'),
+            'zip'                    => request('zip'),
+            'ticket_price'           => request('ticket_price') * 100,
+        ]);
+
+        return redirect()->route('backstage.concerts.index');
     }
 }
