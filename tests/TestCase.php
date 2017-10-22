@@ -47,4 +47,18 @@ abstract class TestCase extends \Illuminate\Foundation\Testing\TestCase
             }
         });
     }
+
+
+    /**
+     * Set a from url
+     *
+     * @param $url
+     * @return $this
+     */
+    protected function from($url)
+    {
+        session()->setPreviousUrl(url($url));
+
+        return $this;
+    }
 }
