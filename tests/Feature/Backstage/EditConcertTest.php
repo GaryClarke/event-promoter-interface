@@ -25,13 +25,15 @@ class EditConcertTest extends TestCase {
             'title'                  => 'Old title',
             'subtitle'               => 'Old subtitle',
             'additional_information' => 'Old additional information',
-            'date'                   => Carbon::parse('2017-01-01 5.00pm'),
+            'date'                   => '2018-12-12',
+            'time'                   => '8:00pm',
             'venue'                  => 'Old venue',
             'venue_address'          => 'Old address',
             'city'                   => 'Old city',
             'state'                  => 'Old state',
             'zip'                    => '00000',
             'ticket_price'           => 2000,
+            'ticket_quantity'        => '10',
         ], $overrides);
     }
 
@@ -160,14 +162,14 @@ class EditConcertTest extends TestCase {
             'subtitle'               => 'New subtitle',
             'additional_information' => 'New additional information',
             'date'                   => '2018-12-12',
-            'time'                   => '8.00pm',
+            'time'                   => '8:00pm',
             'venue'                  => 'New venue',
             'venue_address'          => 'New address',
             'city'                   => 'New city',
             'state'                  => 'New state',
             'zip'                    => '99999',
             'ticket_price'           => '72.50',
-            'ticket_quantity'        => '10'
+            'ticket_quantity'        => '10',
         ]);
 
         $response->assertRedirect("/backstage/concerts");
@@ -192,6 +194,8 @@ class EditConcertTest extends TestCase {
     /** @test */
     function promoters_cannot_edit_other_unpublished_concerts()
     {
+//        $this->disableExceptionHandling();
+
         $user = factory(User::class)->create();
 
         $otherUser = factory(User::class)->create();
@@ -208,6 +212,7 @@ class EditConcertTest extends TestCase {
             'state'                  => 'Old state',
             'zip'                    => '00000',
             'ticket_price'           => 2000,
+            'ticket_quantity'        => 5,
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -217,13 +222,14 @@ class EditConcertTest extends TestCase {
             'subtitle'               => 'New subtitle',
             'additional_information' => 'New additional information',
             'date'                   => '2018-12-12',
-            'time'                   => '8.00pm',
+            'time'                   => '8:00pm',
             'venue'                  => 'New venue',
             'venue_address'          => 'New address',
             'city'                   => 'New city',
             'state'                  => 'New state',
             'zip'                    => '99999',
             'ticket_price'           => '72.50',
+            'ticket_quantity'        => '10',
         ]);
 
         $response->assertStatus(404);
@@ -240,6 +246,7 @@ class EditConcertTest extends TestCase {
             $this->assertEquals('Old state', $concert->state);
             $this->assertEquals('00000', $concert->zip);
             $this->assertEquals(2000, $concert->ticket_price);
+            $this->assertEquals(5, $concert->ticket_quantity);
         });
     }
 
@@ -261,6 +268,7 @@ class EditConcertTest extends TestCase {
             'state'                  => 'Old state',
             'zip'                    => '00000',
             'ticket_price'           => 2000,
+            'ticket_quantity'        => 5,
         ]);
 
         $this->assertTrue($concert->isPublished());
@@ -277,6 +285,7 @@ class EditConcertTest extends TestCase {
             'state'                  => 'New state',
             'zip'                    => '99999',
             'ticket_price'           => '72.50',
+            'ticket_quantity'        => '10',
         ]);
 
         $response->assertStatus(403);
@@ -293,6 +302,7 @@ class EditConcertTest extends TestCase {
             $this->assertEquals('Old state', $concert->state);
             $this->assertEquals('00000', $concert->zip);
             $this->assertEquals(2000, $concert->ticket_price);
+            $this->assertEquals(5, $concert->ticket_quantity);
         });
     }
 
@@ -409,6 +419,8 @@ class EditConcertTest extends TestCase {
     /** @test */
     function subtitle_is_optional()
     {
+        $this->disableExceptionHandling();
+
         // ARRANGE
         // A user
         $user = factory(User::class)->create();
@@ -447,7 +459,7 @@ class EditConcertTest extends TestCase {
         $user = factory(User::class)->create();
 
         $concert = factory(Concert::class)->create([
-            'user_id' => $user->id,
+            'user_id'                => $user->id,
             'additional_information' => 'Old additional information',
         ]);
 
@@ -463,7 +475,8 @@ class EditConcertTest extends TestCase {
         $response->assertRedirect("/backstage/concerts");
 
         // Additional info is null
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertNull($concert->additional_information);
         });
     }
@@ -477,7 +490,7 @@ class EditConcertTest extends TestCase {
 
         $concert = factory(Concert::class)->create([
             'user_id' => $user->id,
-            'date' => Carbon::parse('2018-01-01 8:00pm'),
+            'date'    => Carbon::parse('2018-01-01 8:00pm'),
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -496,7 +509,8 @@ class EditConcertTest extends TestCase {
         $response->assertSessionHasErrors('date');
 
         // Date remains unchanged
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(Carbon::parse('2018-01-01 8:00pm'), $concert->date);
         });
     }
@@ -510,7 +524,7 @@ class EditConcertTest extends TestCase {
 
         $concert = factory(Concert::class)->create([
             'user_id' => $user->id,
-            'date' => Carbon::parse('2018-01-01 8:00pm'),
+            'date'    => Carbon::parse('2018-01-01 8:00pm'),
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -529,7 +543,8 @@ class EditConcertTest extends TestCase {
         $response->assertSessionHasErrors('date');
 
         // Date remains unchanged
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(Carbon::parse('2018-01-01 8:00pm'), $concert->date);
         });
     }
@@ -543,7 +558,7 @@ class EditConcertTest extends TestCase {
 
         $concert = factory(Concert::class)->create([
             'user_id' => $user->id,
-            'date' => Carbon::parse('2018-01-01 8:00pm'),
+            'date'    => Carbon::parse('2018-01-01 8:00pm'),
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -561,7 +576,8 @@ class EditConcertTest extends TestCase {
         $response->assertSessionHasErrors('time');
 
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(Carbon::parse('2018-01-01 8:00pm'), $concert->date);
         });
     }
@@ -575,7 +591,7 @@ class EditConcertTest extends TestCase {
 
         $concert = factory(Concert::class)->create([
             'user_id' => $user->id,
-            'date' => Carbon::parse('2018-01-01 8:00pm'),
+            'date'    => Carbon::parse('2018-01-01 8:00pm'),
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -590,7 +606,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('time');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(Carbon::parse('2018-01-01 8:00pm'), $concert->date);
         });
     }
@@ -604,7 +621,7 @@ class EditConcertTest extends TestCase {
 
         $concert = factory(Concert::class)->create([
             'user_id' => $user->id,
-            'venue' => 'Old venue',
+            'venue'   => 'Old venue',
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -619,7 +636,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('venue');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals('Old venue', $concert->venue);
         });
     }
@@ -632,7 +650,7 @@ class EditConcertTest extends TestCase {
         $user = factory(User::class)->create();
 
         $concert = factory(Concert::class)->create([
-            'user_id' => $user->id,
+            'user_id'       => $user->id,
             'venue_address' => 'Old address',
         ]);
 
@@ -648,7 +666,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('venue_address');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals('Old address', $concert->venue_address);
         });
     }
@@ -662,7 +681,7 @@ class EditConcertTest extends TestCase {
 
         $concert = factory(Concert::class)->create([
             'user_id' => $user->id,
-            'city' => 'Old city',
+            'city'    => 'Old city',
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -677,7 +696,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('city');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals('Old city', $concert->city);
         });
     }
@@ -691,7 +711,7 @@ class EditConcertTest extends TestCase {
 
         $concert = factory(Concert::class)->create([
             'user_id' => $user->id,
-            'state' => 'Old state',
+            'state'   => 'Old state',
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -706,7 +726,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('state');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals('Old state', $concert->state);
         });
     }
@@ -720,7 +741,7 @@ class EditConcertTest extends TestCase {
 
         $concert = factory(Concert::class)->create([
             'user_id' => $user->id,
-            'zip' => 'Old zip',
+            'zip'     => 'Old zip',
         ]);
 
         $this->assertFalse($concert->isPublished());
@@ -735,7 +756,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('zip');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals('Old zip', $concert->zip);
         });
     }
@@ -748,7 +770,7 @@ class EditConcertTest extends TestCase {
         $user = factory(User::class)->create();
 
         $concert = factory(Concert::class)->create([
-            'user_id' => $user->id,
+            'user_id'      => $user->id,
             'ticket_price' => 5250,
         ]);
 
@@ -764,7 +786,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('ticket_price');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(5250, $concert->ticket_price);
         });
     }
@@ -777,7 +800,7 @@ class EditConcertTest extends TestCase {
         $user = factory(User::class)->create();
 
         $concert = factory(Concert::class)->create([
-            'user_id' => $user->id,
+            'user_id'      => $user->id,
             'ticket_price' => 5250,
         ]);
 
@@ -793,7 +816,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('ticket_price');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(5250, $concert->ticket_price);
         });
     }
@@ -806,7 +830,7 @@ class EditConcertTest extends TestCase {
         $user = factory(User::class)->create();
 
         $concert = factory(Concert::class)->create([
-            'user_id' => $user->id,
+            'user_id'      => $user->id,
             'ticket_price' => 5250,
         ]);
 
@@ -822,7 +846,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('ticket_price');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(5250, $concert->ticket_price);
         });
     }
@@ -835,7 +860,7 @@ class EditConcertTest extends TestCase {
         $user = factory(User::class)->create();
 
         $concert = factory(Concert::class)->create([
-            'user_id' => $user->id,
+            'user_id'         => $user->id,
             'ticket_quantity' => 5,
         ]);
 
@@ -851,7 +876,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('ticket_quantity');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(5, $concert->ticket_quantity);
         });
     }
@@ -864,7 +890,7 @@ class EditConcertTest extends TestCase {
         $user = factory(User::class)->create();
 
         $concert = factory(Concert::class)->create([
-            'user_id' => $user->id,
+            'user_id'         => $user->id,
             'ticket_quantity' => 5,
         ]);
 
@@ -880,7 +906,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('ticket_quantity');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(5, $concert->ticket_quantity);
         });
     }
@@ -893,7 +920,7 @@ class EditConcertTest extends TestCase {
         $user = factory(User::class)->create();
 
         $concert = factory(Concert::class)->create([
-            'user_id' => $user->id,
+            'user_id'         => $user->id,
             'ticket_quantity' => 5,
         ]);
 
@@ -909,7 +936,8 @@ class EditConcertTest extends TestCase {
 
         $response->assertSessionHasErrors('ticket_quantity');
 
-        tap($concert->fresh(), function ($concert) {
+        tap($concert->fresh(), function ($concert)
+        {
             $this->assertEquals(5, $concert->ticket_quantity);
         });
     }

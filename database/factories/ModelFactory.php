@@ -30,20 +30,21 @@ $factory->define(App\User::class, function (Faker\Generator $faker)
 $factory->define(App\Concert::class, function (Faker\Generator $faker)
 {
     return [
-        'user_id' => function() {
-
+        'user_id'                => function ()
+        {
             return factory(User::class)->create()->id;
         },
         'title'                  => 'Example Band',
         'subtitle'               => 'with The Fake Openers',
+        'additional_information' => 'Some sample information',
         'date'                   => Carbon::parse('+2 weeks'),
-        'ticket_price'           => 2000,
         'venue'                  => 'The Example Theatre',
         'venue_address'          => '123 Example Lane',
         'city'                   => 'Fakeville',
         'state'                  => 'ON',
         'zip'                    => '90210',
-        'additional_information' => 'Some sample information'
+        'ticket_price'           => 2000,
+        'ticket_quantity'        => 5,
     ];
 });
 
