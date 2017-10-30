@@ -83,12 +83,14 @@ class ConcertTest extends TestCase {
         // ARRANGE
         // An unpublished concert
         $concert = factory(Concert::class)->create([
-            'published_at' => null
+            'published_at'    => null,
+            'ticket_quantity' => 5,
         ]);
 
         // ASSERT
         // Concert is not published
         $this->assertFalse($concert->isPublished());
+        $this->assertEquals(0, $concert->ticketsRemaining());
 
         // ACT
         // Publish the concert
@@ -97,6 +99,7 @@ class ConcertTest extends TestCase {
         // ASSERT
         // Concert is now published
         $this->assertTrue($concert->isPublished());
+        $this->assertEquals(5, $concert->ticketsRemaining());
     }
 
 
@@ -194,7 +197,8 @@ class ConcertTest extends TestCase {
         $order->tickets()->saveMany($concert->tickets->take(2));
 
         // ACT
-        try {
+        try
+        {
 
             // Try to reserve 2 tickets
             $concert->reserveTickets(2, 'john@example.com');
@@ -222,7 +226,8 @@ class ConcertTest extends TestCase {
         $concert->reserveTickets(2, 'john@example.com');
 
         // ACT
-        try {
+        try
+        {
 
             // Try to reserve 2 tickets
             $concert->reserveTickets(2, 'jane@example.com');
