@@ -89,9 +89,10 @@ class PurchaseTicketsTest extends TestCase {
 
         // ARRANGE
         // Create a concert
-        $concert = factory(Concert::class)->states('published')->create([
-            'ticket_price' => 3250
-        ])->addTickets(10);
+        $concert = \ConcertFactory::createPublished([
+            'ticket_price'    => 3250,
+            'ticket_quantity' => 3,
+        ]);
 
 
         // ACT
@@ -109,7 +110,7 @@ class PurchaseTicketsTest extends TestCase {
             'confirmation_number' => 'ORDERCONFIRMATION1234',
             'email'               => 'john@example.com',
             'amount'              => 9750,
-            'tickets' => [
+            'tickets'             => [
                 ['code' => 'TICKETCODE1'],
                 ['code' => 'TICKETCODE2'],
                 ['code' => 'TICKETCODE3'],
@@ -129,9 +130,10 @@ class PurchaseTicketsTest extends TestCase {
         $this->assertEquals(3, $order->ticketQuantity());
 
         // An order confirmation email was sent
-        Mail::assertSent(OrderConfirmationEmail::class, function($mail) use ($order) {
+        Mail::assertSent(OrderConfirmationEmail::class, function ($mail) use ($order)
+        {
             return $mail->hasTo('john@example.com')
-                && $mail->order->id == $order->id;
+            && $mail->order->id == $order->id;
         });
     }
 
