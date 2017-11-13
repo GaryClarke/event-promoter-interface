@@ -51,7 +51,8 @@
                                         </p>
                                     </div>
                                     <div>
-                                        <a href="{{ route('concerts.show', $concert) }}" class="btn btn-sm btn-secondary">Get Ticket Link</a>
+                                        <a href="{{ route('concerts.show', $concert) }}"
+                                           class="btn btn-sm btn-secondary">Get Ticket Link</a>
                                     </div>
                                 </div>
                             </div>
@@ -81,8 +82,16 @@
                                         </p>
                                     </div>
                                     <div>
-                                        <a href="{{ route('backstage.concerts.edit', $concert) }}" class="btn btn-sm btn-secondary m-xs-r-2">Edit</a>
-                                        <a href="#" class="btn btn-sm btn-primary">Publish</a>
+                                        <a href="{{ route('backstage.concerts.edit', $concert) }}"
+                                           class="btn btn-sm btn-secondary m-xs-r-2">Edit</a>
+                                        <form action="{{ route('backstage.published-concerts.store') }}"
+                                              class="inline-block" method="post">
+
+                                            {{ csrf_field() }}
+
+                                            <input type="hidden" name="concert_id" value="{{ $concert->id }}">
+                                            <button type="submit" class="btn btn-sm btn-primary"></button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
