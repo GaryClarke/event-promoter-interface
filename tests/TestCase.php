@@ -7,6 +7,7 @@ use Mockery;
 use Exception;
 use App\Exceptions\Handler;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use PHPUnit\Framework\Assert;
 
 abstract class TestCase extends \Illuminate\Foundation\Testing\TestCase
 {
@@ -32,6 +33,11 @@ abstract class TestCase extends \Illuminate\Foundation\Testing\TestCase
         TestResponse::macro('data', function ($key)
         {
             return $this->original->getData()[$key];
+        });
+
+        TestResponse::macro('assertViewIs', function ($name)
+        {
+            Assert::assertEquals($name, $this->original->name());
         });
     }
 

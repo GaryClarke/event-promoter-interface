@@ -126,12 +126,27 @@ class ConcertTest extends TestCase {
         // Create a concert with 50 available tickets
         $concert = factory(Concert::class)->create();
 
-        $concert->tickets()->saveMany(factory(Ticket::class, 30)->create(['order_id' => 1]));
-        $concert->tickets()->saveMany(factory(Ticket::class, 20)->create(['order_id' => null]));
+        $concert->tickets()->saveMany(factory(Ticket::class, 3)->create(['order_id' => 1]));
+        $concert->tickets()->saveMany(factory(Ticket::class, 2)->create(['order_id' => null]));
 
         // ASSERT
         // 20 tickets should remain
-        $this->assertEquals(20, $concert->ticketsRemaining());
+        $this->assertEquals(2, $concert->ticketsRemaining());
+    }
+
+    /** @test */
+    function tickets_sold_only_includes_tickets_associated_with_an_order()
+    {
+        // ARRANGE
+        // Create a concert with 50 available tickets
+        $concert = factory(Concert::class)->create();
+
+        $concert->tickets()->saveMany(factory(Ticket::class, 3)->create(['order_id' => 1]));
+        $concert->tickets()->saveMany(factory(Ticket::class, 2)->create(['order_id' => null]));
+
+        // ASSERT
+        // 20 tickets should remain
+        $this->assertEquals(3, $concert->ticketsSold());
     }
 
 

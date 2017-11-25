@@ -172,6 +172,17 @@ class Concert extends Model {
     }
 
 
+    /**
+     * Get the number of tickets sold
+     *
+     * @return mixed
+     */
+    public function ticketsSold()
+    {
+        return $this->tickets()->sold()->count();
+    }
+
+
     /**************************************** QUERY SCOPES ****************************************/
 
 
