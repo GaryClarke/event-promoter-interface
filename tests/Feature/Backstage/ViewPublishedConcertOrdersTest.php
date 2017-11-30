@@ -3,8 +3,8 @@
 namespace Tests\Feature\Backstage;
 
 use App\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ViewPublishedConcertOrdersTest extends TestCase {
 
@@ -67,26 +67,3 @@ class ViewPublishedConcertOrdersTest extends TestCase {
         $response->assertRedirect('/login');
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
