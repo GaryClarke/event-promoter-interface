@@ -62,13 +62,13 @@ class Concert extends Model {
 
 
     /**
-     * A concert can have many ticket orders
+     * Concert orders
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return Order
      */
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'tickets');
+        return Order::whereIn('id', $this->tickets()->pluck('order_id'));
     }
 
 
@@ -78,9 +78,9 @@ class Concert extends Model {
      * @param $email
      * @return mixed
      */
-    public function hasOrderFor($email)
+    public function hasOrderFor($customerEmail)
     {
-        return $this->orders()->where('email', $email)->exists();
+        return $this->orders()->where('email', $customerEmail)->exists();
     }
 
 
@@ -90,9 +90,9 @@ class Concert extends Model {
      * @param $email
      * @return mixed
      */
-    public function ordersFor($email)
+    public function ordersFor($customerEmail)
     {
-        return $this->orders()->where('email', $email)->get();
+        return $this->orders()->where('email', $customerEmail)->get();
     }
 
 
@@ -203,6 +203,12 @@ class Concert extends Model {
     {
 //        return $this->ticketsSold() / $this->totalTickets();
         return number_format(($this->ticketsSold() / $this->totalTickets()) * 100, 2);
+    }
+
+
+    public function revenueInDollars()
+    {
+        return $this->orders()->sum('amount') / 100;
     }
 
 
