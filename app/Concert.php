@@ -61,6 +61,12 @@ class Concert extends Model {
     }
 
 
+    public function attendeeMessages()
+    {
+        return $this->hasMany(AttendeeMessage::class);
+    }
+
+
     /**
      * Concert orders
      *
