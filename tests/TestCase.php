@@ -90,7 +90,7 @@ abstract class TestCase extends \Illuminate\Foundation\Testing\TestCase
      * @param $url
      * @return $this
      */
-    protected function from($url)
+    public function from($url)
     {
         session()->setPreviousUrl(url($url));
 

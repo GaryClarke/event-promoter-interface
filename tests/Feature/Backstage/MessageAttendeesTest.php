@@ -179,5 +179,11 @@ class MessageAttendeesTest extends TestCase {
                 'subject'  => 'My subject',
                 'messages' => ''
             ]);
+
+        $response->assertRedirect("/backstage/concerts/{$concert->id}/messages/new");
+
+        $response->assertSessionHasErrors('message');
+
+        $this->assertEquals(0, AttendeeMessage::count());
     }
 }
