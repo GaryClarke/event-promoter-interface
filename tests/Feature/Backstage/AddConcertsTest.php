@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Backstage;
 
+use Storage;
 use App\User;
 use App\Concert;
 use Carbon\Carbon;
 use Tests\TestCase;
+use Illuminate\Http\Testing\File;
+
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class AddConcertsTest extends TestCase {
@@ -413,5 +416,46 @@ class AddConcertsTest extends TestCase {
         $response->assertRedirect('/backstage/concerts/new');
         $response->assertSessionHasErrors('ticket_quantity');
         $this->assertEquals(0, Concert::count());
+    }
+
+
+    /** @test */
+    function a_poster_image_is_uploaded_if_included()
+    {
+        $this->disableExceptionHandling();
+
+        // ARRANGE
+        // Fake storege
+        Storage::fake('s3');
+
+        // A user
+        $user = factory(User::class)->create();
+
+        // A file
+        $file = File::image('concert-poster.png');
+
+        // ACT
+        // Submit the form, including a poster image
+        $response = $this->actingAs($user)->post('/backstage/concerts', $this->validParams([
+            'poster_image'        => $file,
+        ]));
+
+
+        // ASSERT
+        // Make sure the concert has the poser path saved to it
+        tap(Concert::first(), function($concert) use ($file) {
+
+            $this->assertNotNull($concert->poster_image_path);
+
+            Storage::disk('s3')->assertExists($concert->poster_image_path);
+
+            $this->assertFileEquals(
+                $file->getPathname(),
+                Storage::disk('s3')->path($concert->poster_image_path)
+            );
+        });
+
+
+
     }
 }
