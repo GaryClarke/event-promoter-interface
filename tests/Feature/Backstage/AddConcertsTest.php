@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Backstage;
 
-use Storage;
 use App\User;
 use App\Concert;
 use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
