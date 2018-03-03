@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Backstage;
 
-use App\Concert;
-use App\Http\Controllers\Controller;
+use App\Events\ConcertAdded;
 use App\NullFile;
-use Auth;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
 
 class ConcertsController extends Controller {
 
@@ -71,8 +71,10 @@ class ConcertsController extends Controller {
             'zip'                    => request('zip'),
             'ticket_price'           => request('ticket_price') * 100,
             'ticket_quantity'        => (int) request('ticket_quantity'),
-            'poster_image_path'      => request('poster_image', new NullFile)->store('posters', 's3')
+            'poster_image_path'      => request('poster_image', new NullFile)->store('posters', 'public')
         ]);
+
+        ConcertAdded::dispatch($concert);
 
         return redirect()->route('concerts.show', $concert);
     }

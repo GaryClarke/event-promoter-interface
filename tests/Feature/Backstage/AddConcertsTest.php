@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Backstage;
 
+use App\Events\ConcertAdded;
 use App\User;
 use App\Concert;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Storage;
@@ -428,7 +430,7 @@ class AddConcertsTest extends TestCase {
 
         // ARRANGE
         // Fake storege
-        Storage::fake('s3');
+        Storage::fake('public');
 
         // A user
         $user = factory(User::class)->create();
@@ -446,14 +448,13 @@ class AddConcertsTest extends TestCase {
         // Make sure the concert has the poser path saved to it
         tap(Concert::first(), function ($concert) use ($file)
         {
-
             $this->assertNotNull($concert->poster_image_path);
 
-            Storage::disk('s3')->assertExists($concert->poster_image_path);
+            Storage::disk('public')->assertExists($concert->poster_image_path);
 
             $this->assertFileEquals(
                 $file->getPathname(),
-                Storage::disk('s3')->path($concert->poster_image_path)
+                Storage::disk('public')->path($concert->poster_image_path)
             );
         });
     }
@@ -462,7 +463,7 @@ class AddConcertsTest extends TestCase {
     /** @test */
     function poster_image_must_be_an_image()
     {
-        Storage::fake('s3');
+        Storage::fake('public');
 
         $user = factory(User::class)->create();
 
@@ -483,7 +484,7 @@ class AddConcertsTest extends TestCase {
     /** @test */
     function poster_image_must_be_at_least_400px_wide()
     {
-        Storage::fake('s3');
+        Storage::fake('public');
 
         $user = factory(User::class)->create();
 
@@ -504,7 +505,7 @@ class AddConcertsTest extends TestCase {
     /** @test */
     function poster_image_must_have_letter_aspect_ratio()
     {
-        Storage::fake('s3');
+        Storage::fake('public');
 
         $user = factory(User::class)->create();
 
@@ -539,5 +540,33 @@ class AddConcertsTest extends TestCase {
 
             $this->assertNull($concert->poster_image_path);
         });
+    }
+
+
+    /** @test */
+    function an_event_is_fired_when_a_concert_is_added()
+    {
+        $this->disableExceptionHandling();
+
+        // ARRANGE
+        // A user
+        $user = factory(User::class)->create();
+
+        // Fake the events
+        Event::fake([ConcertAdded::class]);
+
+        // ACT
+        // Add a concert
+        $response = $this->actingAs($user)->post('/backstage/concerts', $this->validParams());
+
+        // ASSERT
+        // A concert added event is dispatched
+        Event::assertDispatched(ConcertAdded::class, function($event) {
+
+            $concert = Concert::firstOrFail();
+
+            return $event->concert->is($concert);
+        });
+
     }
 }
