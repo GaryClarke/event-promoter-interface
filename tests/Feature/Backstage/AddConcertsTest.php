@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Backstage;
 
-use App\Events\ConcertAdded;
 use App\User;
 use App\Concert;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
+use App\Events\ConcertAdded;
 use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
