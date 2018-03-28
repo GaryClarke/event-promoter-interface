@@ -4,6 +4,7 @@ namespace Tests\Feature\Backstage;
 
 use App\User;
 use App\Concert;
+use ConcertFactory;
 use Tests\TestCase;
 use PHPUnit\Framework\Assert;
 use Illuminate\Database\Eloquent\Collection;
@@ -13,26 +14,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 class ViewConcertListTest extends TestCase {
 
     use DatabaseMigrations;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        TestResponse::macro('data', function($key) {
-
-            return $this->original->getData()[$key];
-        });
-
-        Collection::macro('assertContains', function($value) {
-
-            Assert::assertTrue($this->contains($value), 'Failed asserting that the collection contained the specified value');
-        });
-
-        Collection::macro('assertNotContains', function($value) {
-
-            Assert::assertFalse($this->contains($value), 'Failed asserting that the collection did not contain the specified value');
-        });
-    }
 
 
     /** @test */
@@ -53,18 +34,29 @@ class ViewConcertListTest extends TestCase {
         $user = factory(User::class)->create();
         $otherUser = factory(User::class)->create();
 
-        $concertA = factory(Concert::class)->create(['user_id' => $user->id]);
-        $concertB = factory(Concert::class)->create(['user_id' => $user->id]);
-        $concertC = factory(Concert::class)->create(['user_id' => $otherUser->id]);
-        $concertD = factory(Concert::class)->create(['user_id' => $user->id]);
+
+        // Published concerts
+        $publishedConcertA = ConcertFactory::createPublished(['user_id' => $user->id]);
+        $publishedConcertB = ConcertFactory::createPublished(['user_id' => $otherUser->id]);
+        $publishedConcertC = ConcertFactory::createPublished(['user_id' => $user->id]);
+
+        // Unpublished concerts
+        $unpublishedConcertA = ConcertFactory::createUnpublished(['user_id' => $user->id]);
+        $unpublishedConcertB = ConcertFactory::createUnpublished(['user_id' => $otherUser->id]);
+        $unpublishedConcertC = ConcertFactory::createUnpublished(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->get('/backstage/concerts');
 
         $response->assertStatus(200);
 
-        $response->data('concerts')->assertContains($concertA);
-        $response->data('concerts')->assertContains($concertB);
-        $response->data('concerts')->assertContains($concertD);
-        $response->data('concerts')->assertNotContains($concertC);
+        $response->data('publishedConcerts')->assertEquals([
+            $publishedConcertA,
+            $publishedConcertC
+        ]);
+
+        $response->data('unpublishedConcerts')->assertEquals([
+            $unpublishedConcertA,
+            $unpublishedConcertC
+        ]);
     }
 }

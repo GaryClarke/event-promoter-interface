@@ -2,8 +2,9 @@
 
 namespace App;
 
-use App\Facades\TicketCode;
 use Carbon\Carbon;
+use App\Facades\TicketCode;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Ticket extends Model {
@@ -21,6 +22,17 @@ class Ticket extends Model {
     public function scopeAvailable($query)
     {
         return $query->whereNull('order_id')->whereNull('reserved_at');
+    }
+
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeSold($query)
+    {
+        return $query->whereNotNull('order_id');
     }
 
 

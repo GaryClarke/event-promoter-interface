@@ -6,6 +6,11 @@ use App\User;
 use App\Concert;
 use Carbon\Carbon;
 use Tests\TestCase;
+use App\Events\ConcertAdded;
+use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class AddConcertsTest extends TestCase {
@@ -77,7 +82,8 @@ class AddConcertsTest extends TestCase {
             'ticket_quantity'        => '75'
         ]);
 
-        tap(Concert::first(), function($concert) use ($response, $user) {
+        tap(Concert::first(), function ($concert) use ($response, $user)
+        {
 
             $response->assertStatus(302);
             $response->assertRedirect("/concerts/{$concert->id}");
@@ -119,7 +125,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'title'                  => '',
+            'title' => '',
         ]));
 
         $response->assertStatus(302);
@@ -140,8 +146,8 @@ class AddConcertsTest extends TestCase {
             'subtitle' => '',
         ]));
 
-        tap(Concert::first(), function($concert) use ($response, $user) {
-
+        tap(Concert::first(), function ($concert) use ($response, $user)
+        {
             $response->assertStatus(302);
             $response->assertRedirect("/concerts/$concert->id");
 
@@ -163,7 +169,8 @@ class AddConcertsTest extends TestCase {
             'additional_information' => '',
         ]));
 
-        tap(Concert::first(), function($concert) use ($response, $user) {
+        tap(Concert::first(), function ($concert) use ($response, $user)
+        {
 
             $response->assertStatus(302);
             $response->assertRedirect("/concerts/{$concert->id}");
@@ -182,7 +189,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'date'                   => '',
+            'date' => '',
         ]));
 
         $response->assertStatus(302);
@@ -198,7 +205,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'date'                   => 'not a date',
+            'date' => 'not a date',
         ]));
 
         $response->assertStatus(302);
@@ -214,7 +221,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'time'                   => '',
+            'time' => '',
         ]));
 
         $response->assertStatus(302);
@@ -230,7 +237,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'time'                   => 'not a time',
+            'time' => 'not a time',
         ]));
 
         $response->assertStatus(302);
@@ -246,7 +253,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'venue'                  => '',
+            'venue' => '',
         ]));
 
         $response->assertStatus(302);
@@ -262,7 +269,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'venue_address'          => '',
+            'venue_address' => '',
         ]));
 
         $response->assertStatus(302);
@@ -278,7 +285,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'city'                   => '',
+            'city' => '',
         ]));
 
         $response->assertStatus(302);
@@ -294,7 +301,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'state'                  => '',
+            'state' => '',
         ]));
 
         $response->assertStatus(302);
@@ -310,7 +317,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'zip'                    => '',
+            'zip' => '',
         ]));
 
         $response->assertStatus(302);
@@ -326,7 +333,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'ticket_price'           => '',
+            'ticket_price' => '',
         ]));
 
         $response->assertStatus(302);
@@ -342,7 +349,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'ticket_price'           => 'not a price',
+            'ticket_price' => 'not a price',
         ]));
 
         $response->assertStatus(302);
@@ -358,7 +365,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'ticket_price'           => '4.99',
+            'ticket_price' => '4.99',
         ]));
 
         $response->assertStatus(302);
@@ -374,7 +381,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'ticket_quantity'        => ''
+            'ticket_quantity' => ''
         ]));
 
         $response->assertStatus(302);
@@ -390,7 +397,7 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'ticket_quantity'        => 'not a number'
+            'ticket_quantity' => 'not a number'
         ]));
 
         $response->assertStatus(302);
@@ -406,12 +413,160 @@ class AddConcertsTest extends TestCase {
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
-            'ticket_quantity'        => '0'
+            'ticket_quantity' => '0'
         ]));
 
         $response->assertStatus(302);
         $response->assertRedirect('/backstage/concerts/new');
         $response->assertSessionHasErrors('ticket_quantity');
         $this->assertEquals(0, Concert::count());
+    }
+
+
+    /** @test */
+    function a_poster_image_is_uploaded_if_included()
+    {
+        $this->disableExceptionHandling();
+
+        // ARRANGE
+        // Fake storege
+        Storage::fake('public');
+
+        // A user
+        $user = factory(User::class)->create();
+
+        // A file
+        $file = File::image('concert-poster.png', 850, 1100);
+
+        // ACT
+        // Submit the form, including a poster image
+        $response = $this->actingAs($user)->post('/backstage/concerts', $this->validParams([
+            'poster_image' => $file,
+        ]));
+
+        // ASSERT
+        // Make sure the concert has the poser path saved to it
+        tap(Concert::first(), function ($concert) use ($file)
+        {
+            $this->assertNotNull($concert->poster_image_path);
+
+            Storage::disk('public')->assertExists($concert->poster_image_path);
+
+            $this->assertFileEquals(
+                $file->getPathname(),
+                Storage::disk('public')->path($concert->poster_image_path)
+            );
+        });
+    }
+
+
+    /** @test */
+    function poster_image_must_be_an_image()
+    {
+        Storage::fake('public');
+
+        $user = factory(User::class)->create();
+
+        // A file
+        $file = File::create('not-a-poster.pdf');
+
+        $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
+            'poster_image' => $file,
+        ]));
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/backstage/concerts/new');
+        $response->assertSessionHasErrors('poster_image');
+        $this->assertEquals(0, Concert::count());
+    }
+
+
+    /** @test */
+    function poster_image_must_be_at_least_400px_wide()
+    {
+        Storage::fake('public');
+
+        $user = factory(User::class)->create();
+
+        // A file (516 height sounds very specific but is the correct aspect ratio to pass that part of the validation)
+        $file = File::image('poster.png', 399, 516);
+
+        $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
+            'poster_image' => $file,
+        ]));
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/backstage/concerts/new');
+        $response->assertSessionHasErrors('poster_image');
+        $this->assertEquals(0, Concert::count());
+    }
+
+
+    /** @test */
+    function poster_image_must_have_letter_aspect_ratio()
+    {
+        Storage::fake('public');
+
+        $user = factory(User::class)->create();
+
+        // A file
+        $file = File::image('poster.png', 851, 1100);
+
+        $response = $this->actingAs($user)->from('/backstage/concerts/new')->post('/backstage/concerts', $this->validParams([
+            'poster_image' => $file,
+        ]));
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/backstage/concerts/new');
+        $response->assertSessionHasErrors('poster_image');
+        $this->assertEquals(0, Concert::count());
+    }
+
+
+    /** @test */
+    function poster_image_is_optional()
+    {
+        $user = factory(User::class)->create();
+
+        $response = $this->actingAs($user)->post('/backstage/concerts', $this->validParams([
+            'poster_image' => null,
+        ]));
+
+        tap(Concert::first(), function ($concert) use ($response, $user)
+        {
+            $response->assertRedirect("/concerts/$concert->id");
+
+            $this->assertTrue($concert->user->is($user));
+
+            $this->assertNull($concert->poster_image_path);
+        });
+    }
+
+
+    /** @test */
+    function an_event_is_fired_when_a_concert_is_added()
+    {
+        $this->disableExceptionHandling();
+
+        // ARRANGE
+        // A user
+        $user = factory(User::class)->create();
+
+        // Fake the events
+        Event::fake([ConcertAdded::class]);
+
+        // ACT
+        // Add a concert
+        $response = $this->actingAs($user)->post('/backstage/concerts', $this->validParams());
+
+        // ASSERT
+        // A concert added event is dispatched
+        Event::assertDispatched(ConcertAdded::class, function($event) {
+
+            $concert = Concert::firstOrFail();
+
+            return $event->concert->is($concert);
+        });
+
     }
 }

@@ -4,6 +4,7 @@ namespace App;
 
 use App\Exceptions\NotEnoughTicketsException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Concert extends Model {
 
@@ -61,14 +62,20 @@ class Concert extends Model {
     }
 
 
+    public function attendeeMessages()
+    {
+        return $this->hasMany(AttendeeMessage::class);
+    }
+
+
     /**
-     * A concert can have many ticket orders
+     * Concert orders
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return Order
      */
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'tickets');
+        return Order::whereIn('id', $this->tickets()->pluck('order_id'));
     }
 
 
@@ -78,9 +85,9 @@ class Concert extends Model {
      * @param $email
      * @return mixed
      */
-    public function hasOrderFor($email)
+    public function hasOrderFor($customerEmail)
     {
-        return $this->orders()->where('email', $email)->exists();
+        return $this->orders()->where('email', $customerEmail)->exists();
     }
 
 
@@ -90,9 +97,9 @@ class Concert extends Model {
      * @param $email
      * @return mixed
      */
-    public function ordersFor($email)
+    public function ordersFor($customerEmail)
     {
-        return $this->orders()->where('email', $email)->get();
+        return $this->orders()->where('email', $customerEmail)->get();
     }
 
 
@@ -172,6 +179,46 @@ class Concert extends Model {
     }
 
 
+    /**
+     * Get the number of tickets sold
+     *
+     * @return mixed
+     */
+    public function ticketsSold()
+    {
+        return $this->tickets()->sold()->count();
+    }
+
+
+    /**
+     * Return the total number of tickets
+     *
+     * @return int
+     */
+    public function totalTickets()
+    {
+        return $this->tickets()->count();
+    }
+
+
+    /**
+     * Percentage sold out
+     *
+     * @return string
+     */
+    public function percentSoldOut()
+    {
+//        return $this->ticketsSold() / $this->totalTickets();
+        return number_format(($this->ticketsSold() / $this->totalTickets()) * 100, 2);
+    }
+
+
+    public function revenueInDollars()
+    {
+        return $this->orders()->sum('amount') / 100;
+    }
+
+
     /**************************************** QUERY SCOPES ****************************************/
 
 
@@ -206,5 +253,17 @@ class Concert extends Model {
         $this->update(['published_at' => $this->freshTimestamp()]);
 
         $this->addTickets($this->ticket_quantity);
+    }
+
+
+    public function hasPoster()
+    {
+        return $this->poster_image_path !== null;
+    }
+
+
+    public function posterUrl()
+    {
+        return Storage::disk('public')->url($this->poster_image_path);
     }
 }

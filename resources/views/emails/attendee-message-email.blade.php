@@ -1,0 +1,2 @@
+{{ $attendeeMessage->message }}
+

@@ -72,7 +72,7 @@ class PurchaseTicketsTest extends TestCase {
         $this->assertResponseStatus(422);
 
         // Validation requires email
-        $this->assertArrayHasKey($field, $this->decodeResponseJson());
+        $this->assertArrayHasKey($field, $this->decodeResponseJson()['errors']);
     }
 
 
