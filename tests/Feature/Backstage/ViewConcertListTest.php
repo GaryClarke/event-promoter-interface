@@ -45,8 +45,7 @@ class ViewConcertListTest extends TestCase {
         $response->assertRedirect('/login');
     }
 
-
-    /** @test */
+    
     function promoters_can_only_view_a_list_of_their_own_concerts()
     {
         $this->disableExceptionHandling();
