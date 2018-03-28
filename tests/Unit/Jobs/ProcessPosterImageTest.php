@@ -18,27 +18,27 @@ class ProcessPosterImageTest extends TestCase
         Storage::fake('public');
 
         Storage::disk('public')->put(
-            'posters/example-poster.jpg',
-            file_get_contents(base_path('tests/__fixtures__/large-image.jpg'))
+            'posters/example-poster.png',
+            file_get_contents(base_path('tests/__fixtures__/full-size-poster.png'))
         );
 
         $concert = \ConcertFactory::createUnpublished([
-            'poster_image_path' => 'posters/example-poster.jpg',
+            'poster_image_path' => 'posters/example-poster.png',
         ]);
 
         ProcessPosterImage::dispatch($concert);
 
-        $resizedImage = Storage::disk('public')->get('posters/example-poster.jpg');
+        $resizedImage = Storage::disk('public')->get('posters/example-poster.png');
 
         list($width, $height) = getimagesizefromstring($resizedImage);
 
         $this->assertEquals(600, $width);
 
-        $this->assertEquals(348, $height);
+        $this->assertEquals(776, $height);
 
-        $resizedImageContents = Storage::disk('public')->get('posters/example-poster.jpg');
+        $resizedImageContents = Storage::disk('public')->get('posters/example-poster.png');
 
-        $controlImageContents = file_get_contents(base_path('tests/__fixtures__/small-unoptimized-poster.jpg'));
+        $controlImageContents = file_get_contents(base_path('tests/__fixtures__/optimized-poster.png'));
 
         $this->assertEquals($controlImageContents, $resizedImageContents);
     }
@@ -50,25 +50,25 @@ class ProcessPosterImageTest extends TestCase
         Storage::fake('public');
 
         Storage::disk('public')->put(
-            'posters/example-poster.jpg',
-            file_get_contents(base_path('tests/__fixtures__/small-unoptimized-poster.jpg'))
+            'posters/example-poster.png',
+            file_get_contents(base_path('tests/__fixtures__/small-unoptimized-poster.png'))
         );
 
         $concert = \ConcertFactory::createUnpublished([
-            'poster_image_path' => 'posters/example-poster.jpg',
+            'poster_image_path' => 'posters/example-poster.png',
         ]);
 
         ProcessPosterImage::dispatch($concert);
 
-        $originalSize = filesize(base_path('tests/__fixtures__/small-unoptimized-poster.jpg'));
+        $optimizedImageSize = Storage::disk('public')->size('posters/example-poster.png');
 
-        $optimizedImageSize = Storage::disk('public')->size('posters/example-poster.jpg');
+        $originalSize = filesize(base_path('tests/__fixtures__/small-unoptimized-poster.png'));
 
         $this->assertLessThan($originalSize, $optimizedImageSize);
 
-        $optimizedImageContents = Storage::disk('public')->get('posters/example-poster.jpg');
+        $optimizedImageContents = Storage::disk('public')->get('posters/example-poster.png');
 
-        $controlImageContents = file_get_contents(base_path('tests/__fixtures__/optimized-image.jpg'));
+        $controlImageContents = file_get_contents(base_path('tests/__fixtures__/optimized-poster.png'));
 
         $this->assertEquals($controlImageContents, $optimizedImageContents);
     }

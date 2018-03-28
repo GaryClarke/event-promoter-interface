@@ -42,7 +42,7 @@ class ProcessPosterImage implements ShouldQueue
 
             $constraint->aspectRatio();
 
-        })->encode();
+        })->limitColors(255)->encode();
 
         Storage::disk('public')->put($this->concert->poster_image_path, (string) $image);
     }
