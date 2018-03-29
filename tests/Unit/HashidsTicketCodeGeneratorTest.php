@@ -90,4 +90,6 @@ class HashidsTicketCodeGeneratorTest extends TestCase {
         // Code is min 6 chars
         $this->assertNotEquals($code1, $code2);
     }
+
+    /** test comment */
 }
