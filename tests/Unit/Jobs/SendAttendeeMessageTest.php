@@ -18,7 +18,7 @@ class SendAttendeeMessageTest extends TestCase {
     /** @test */
     function it_sends_the_message_to_all_concert_attendees()
     {
-        $this->disableExceptionHandling();
+        $this->withoutExceptionHandling();
 
         Mail::fake();
 

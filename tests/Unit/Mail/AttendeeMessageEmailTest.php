@@ -11,7 +11,7 @@ class AttendeeMessageEmailTest extends TestCase {
     /** @test */
     function email_has_correct_subject_and_message()
     {
-        $this->disableExceptionHandling();
+        $this->withoutExceptionHandling();
 
         $message = new AttendeeMessage([
             'subject' => 'My subject',

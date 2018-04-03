@@ -53,7 +53,7 @@ class ConcertsController extends Controller {
             'zip'             => ['required'],
             'ticket_price'    => ['required', 'numeric', 'min:5'],
             'ticket_quantity' => ['required', 'numeric', 'min:1'],
-            'poster_image'    => ['nullable', 'image', Rule::dimensions()->minWidth(400)->ratio(8.5/11)]
+            'poster_image'    => ['nullable', 'image', Rule::dimensions()->minWidth(600)->ratio(8.5/11)]
         ]);
 
         $concert = auth()->user()->concerts()->create([

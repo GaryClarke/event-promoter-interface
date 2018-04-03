@@ -2,10 +2,9 @@
 
 namespace Tests\Unit\Jobs;
 
+use Tests\TestCase;
 use App\Jobs\ProcessPosterImage;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ProcessPosterImageTest extends TestCase

@@ -74,7 +74,7 @@ class EditConcertTest extends TestCase {
     /** @test */
     function promoters_can_view_the_edit_form_for_their_own_unpublished_concerts()
     {
-        $this->disableExceptionHandling();
+        $this->withoutExceptionHandling();
 
         $user = factory(User::class)->create();
 
@@ -160,7 +160,7 @@ class EditConcertTest extends TestCase {
     /** @test */
     function promoters_can_edit_their_own_unpublished_concerts()
     {
-        $this->disableExceptionHandling();
+        $this->withoutExceptionHandling();
 
         $user = factory(User::class)->create();
 
@@ -218,7 +218,7 @@ class EditConcertTest extends TestCase {
     /** @test */
     function promoters_cannot_edit_other_unpublished_concerts()
     {
-//        $this->disableExceptionHandling();
+//        $this->withoutExceptionHandling();
 
         $user = factory(User::class)->create();
 
@@ -321,7 +321,7 @@ class EditConcertTest extends TestCase {
     /** @test */
     function subtitle_is_optional()
     {
-        $this->disableExceptionHandling();
+        $this->withoutExceptionHandling();
 
         // ARRANGE
         // A user

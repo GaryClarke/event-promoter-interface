@@ -14,7 +14,7 @@ class PublishConcertTest extends TestCase {
     /** @test */
     function a_promoter_can_publish_their_own_concert()
     {
-        $this->disableExceptionHandling();
+        $this->withoutExceptionHandling();
 
         // ARRANGE
         // A promoter
