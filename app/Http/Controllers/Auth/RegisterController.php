@@ -10,9 +10,21 @@ use App\Http\Controllers\Controller;
 
 class RegisterController extends Controller {
 
+    /**
+     * Register a user with an invitation code
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function register()
     {
         $invitation = Invitation::findByCode(request('invitation_code'));
+
+        abort_if($invitation->hasBeenUsed(), 404);
+
+        request()->validate([
+            'email'    => ['required', 'email', 'unique:users'],
+            'password' => ['required']
+        ]);
 
         $user = User::create([
             'email'    => request('email'),
@@ -20,7 +32,7 @@ class RegisterController extends Controller {
         ]);
 
         $invitation->update([
-           'user_id' => $user->id
+            'user_id' => $user->id
         ]);
 
         Auth::login($user);
