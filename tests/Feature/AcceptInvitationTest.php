@@ -277,5 +277,4 @@ class AcceptInvitationTest extends TestCase {
         // No user created
         $this->assertEquals(0, User::count());
     }
-
 }

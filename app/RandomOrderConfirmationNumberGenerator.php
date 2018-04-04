@@ -2,7 +2,7 @@
 
 namespace App;
 
-class RandomOrderConfirmationNumberGenerator implements OrderConfirmationNumberGenerator {
+class RandomOrderConfirmationNumberGenerator implements OrderConfirmationNumberGenerator, InvitationCodeGenerator {
 
     private $length = 24;
 

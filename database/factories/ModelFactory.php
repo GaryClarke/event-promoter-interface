@@ -15,8 +15,7 @@
 use App\User;
 use Carbon\Carbon;
 
-$factory->define(App\User::class, function (Faker\Generator $faker)
-{
+$factory->define(App\User::class, function (Faker\Generator $faker) {
     static $password;
 
     return [
@@ -27,11 +26,9 @@ $factory->define(App\User::class, function (Faker\Generator $faker)
     ];
 });
 
-$factory->define(App\Concert::class, function (Faker\Generator $faker)
-{
+$factory->define(App\Concert::class, function (Faker\Generator $faker) {
     return [
-        'user_id'                => function ()
-        {
+        'user_id'                => function () {
             return factory(User::class)->create()->id;
         },
         'title'                  => 'Example Band',
@@ -48,41 +45,35 @@ $factory->define(App\Concert::class, function (Faker\Generator $faker)
     ];
 });
 
-$factory->state(App\Concert::class, 'published', function (Faker\Generator $faker)
-{
+$factory->state(App\Concert::class, 'published', function (Faker\Generator $faker) {
     return [
         'published_at' => Carbon::parse('-1 week')
     ];
 });
 
-$factory->state(App\Concert::class, 'unpublished', function (Faker\Generator $faker)
-{
+$factory->state(App\Concert::class, 'unpublished', function (Faker\Generator $faker) {
     return [
         'published_at' => null
     ];
 });
 
 
-$factory->define(App\Ticket::class, function (Faker\Generator $faker)
-{
+$factory->define(App\Ticket::class, function (Faker\Generator $faker) {
     return [
-        'concert_id' => function ()
-        {
+        'concert_id' => function () {
             return factory(App\Concert::class)->create()->id;
         }
     ];
 });
 
-$factory->state(App\Ticket::class, 'reserved', function ()
-{
+$factory->state(App\Ticket::class, 'reserved', function () {
 
     return [
         'reserved_at' => Carbon::parse('-1 day')
     ];
 });
 
-$factory->define(App\Order::class, function (Faker\Generator $faker)
-{
+$factory->define(App\Order::class, function (Faker\Generator $faker) {
     return [
         'amount'              => 5250,
         'email'               => $faker->email,
@@ -92,7 +83,10 @@ $factory->define(App\Order::class, function (Faker\Generator $faker)
 });
 
 
-$factory->define(App\Invitation::class, function(\Faker\Generator $faker) {
+$factory->define(App\Invitation::class, function (\Faker\Generator $faker) {
 
-    return [];
+    return [
+        'email' => $faker->email,
+        'code'  => 'TESTCODE1234'
+    ];
 });
