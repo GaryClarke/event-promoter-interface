@@ -11,7 +11,7 @@ class PromoterLoginTest extends DuskTestCase {
 
     use DatabaseMigrations;
 
-    /** @test */
+
     public function logging_in_successfully()
     {
         $user = factory(User::class)->create([
@@ -30,7 +30,7 @@ class PromoterLoginTest extends DuskTestCase {
     }
 
 
-    /** @test */
+
     public function logging_in_with_invalid_credentials()
     {
         $user = factory(User::class)->create([
