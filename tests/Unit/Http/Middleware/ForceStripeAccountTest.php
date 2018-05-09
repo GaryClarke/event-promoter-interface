@@ -3,28 +3,29 @@
 namespace Tests\Unit\Http\Middleware;
 
 use App\User;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Middleware\ForceStripeAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ForceStripeAccountTest extends TestCase
-{
+class ForceStripeAccountTest extends TestCase {
+
     use RefreshDatabase;
 
     /** @test */
     function users_without_a_stripe_account_are_forced_to_connect_with_stripe()
     {
         $this->be(factory(User::class)->create([
-           'stripe_account_id' => null
+            'stripe_account_id' => null
         ]));
 
         $middleware = new ForceStripeAccount;
 
         // ACT
         // Handle the request
-        $response = $middleware->handle(new Request, function() {
+        $response = $middleware->handle(new Request, function () {
 
             $this->fail('Next middleware was called when it should not have been.');
         });
@@ -55,6 +56,7 @@ class ForceStripeAccountTest extends TestCase
             public function __invoke($request)
             {
                 $this->called = true;
+
                 return $request;
             }
         };
@@ -66,5 +68,30 @@ class ForceStripeAccountTest extends TestCase
         $this->assertTrue($next->called);
 
         $this->assertSame($response, $request);
+    }
+
+
+    /** @test */
+    function middleware_is_applied_to_all_backstage_routes()
+    {
+        $routes = [
+            'backstage.concerts.index',
+            'backstage.concerts.new',
+            'backstage.concerts.store',
+            'backstage.concerts.edit',
+            'backstage.concerts.update',
+            'backstage.published-concerts.store',
+            'backstage.published-concert-orders.index',
+            'backstage.concert-messages.new',
+            'backstage.concert-messages.store'
+        ];
+
+        foreach ($routes as $route)
+        {
+            $this->assertContains(
+                ForceStripeAccount::class,
+                Route::getRoutes()->getByName($route)->gatherMiddleware()
+            );
+        }
     }
 }
