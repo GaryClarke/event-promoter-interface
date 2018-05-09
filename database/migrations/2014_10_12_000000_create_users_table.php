@@ -18,6 +18,8 @@ class CreateUsersTable extends Migration
             $table->string('name')->nullable();
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('stripe_account_id')->nullable();
+            $table->string('stripe_access_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
