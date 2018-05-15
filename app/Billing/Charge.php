@@ -28,6 +28,12 @@ class Charge {
     }
 
 
+    public function destinationAccount()
+    {
+        return $this->data['destination_account'];
+    }
+
+
     /**
      * Get the charged amount
      *

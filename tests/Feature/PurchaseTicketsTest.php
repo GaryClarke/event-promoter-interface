@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Concert;
+use App\User;
 use Tests\TestCase;
 use App\Facades\TicketCode;
 use App\Billing\PaymentGateway;
@@ -88,10 +89,14 @@ class PurchaseTicketsTest extends TestCase {
         TicketCode::shouldReceive('generateFor')->andReturn('TICKETCODE1', 'TICKETCODE2', 'TICKETCODE3');
 
         // ARRANGE
+        // A user
+        $user = factory(User::class)->create(['stripe_account_id' => 'test_acct_1234']);
+
         // Create a concert
         $concert = \ConcertFactory::createPublished([
             'ticket_price'    => 3250,
             'ticket_quantity' => 3,
+            'user_id'         => $user
         ]);
 
 
@@ -119,7 +124,7 @@ class PurchaseTicketsTest extends TestCase {
 
         // ASSERT
         // Make sure the customer was charged the correct amount
-        $this->assertEquals(9750, $this->paymentGateway->totalCharges());
+        $this->assertEquals(9750, $this->paymentGateway->totalChargesFor('test_acct_1234'));
 
         // Make sure that the order exists for the customer
         $this->assertTrue($concert->hasOrderFor('john@example.com'));
@@ -130,10 +135,9 @@ class PurchaseTicketsTest extends TestCase {
         $this->assertEquals(3, $order->ticketQuantity());
 
         // An order confirmation email was sent
-        Mail::assertSent(OrderConfirmationEmail::class, function ($mail) use ($order)
-        {
+        Mail::assertSent(OrderConfirmationEmail::class, function ($mail) use ($order) {
             return $mail->hasTo('john@example.com')
-            && $mail->order->id == $order->id;
+                && $mail->order->id == $order->id;
         });
     }
 
@@ -236,8 +240,7 @@ class PurchaseTicketsTest extends TestCase {
         ])->addTickets(3);
 
         // Make a prior order request
-        $this->paymentGateway->beforeFirstCharge(function ($paymentGateway) use ($concert)
-        {
+        $this->paymentGateway->beforeFirstCharge(function ($paymentGateway) use ($concert) {
 
             $this->orderTickets($concert, [
                 'email'           => 'personB@example.com',

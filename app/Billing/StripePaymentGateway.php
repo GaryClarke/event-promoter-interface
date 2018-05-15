@@ -15,7 +15,7 @@ class StripePaymentGateway implements PaymentGateway {
         $this->apiKey = $apiKey;
     }
 
-    public function charge($amount, $token)
+    public function charge($amount, $token, $destinationAccountId)
     {
         try
         {
@@ -23,7 +23,11 @@ class StripePaymentGateway implements PaymentGateway {
                 [
                     'amount'   => $amount,
                     'currency' => 'gbp',
-                    'source'   => $token
+                    'source'   => $token,
+                    'destination' => [
+                        'account' => $destinationAccountId,
+                        'amount' => $amount * .9,
+                    ]
                 ],
                 [
                     'api_key' => $this->apiKey
@@ -32,7 +36,8 @@ class StripePaymentGateway implements PaymentGateway {
 
             return new Charge([
                 'amount'         => $stripeCharge['amount'],
-                'card_last_four' => $stripeCharge['source']['last4']
+                'card_last_four' => $stripeCharge['source']['last4'],
+                'destination_account' => $destinationAccountId
             ]);
 
         } catch (InvalidRequest $e)
@@ -85,12 +90,12 @@ class StripePaymentGateway implements PaymentGateway {
      */
     private function lastCharge()
     {
-        return \Stripe\Charge::all(
+        return array_first(\Stripe\Charge::all(
 
             ['limit' => 1],
             ['api_key' => $this->apiKey]
 
-        )['data'][0];
+        )['data']);
     }
 
 

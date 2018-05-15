@@ -113,7 +113,7 @@ class ReservationTest extends TestCase {
 
         // ACT
         // Complete the reservation
-        $order = $reservation->complete($paymentGateway, $paymentGateway->getValidTestToken());
+        $order = $reservation->complete($paymentGateway, $paymentGateway->getValidTestToken(), 'test_acct_1234');
 
         // ASSERT
         // Order contains customer email
@@ -127,5 +127,6 @@ class ReservationTest extends TestCase {
 
         $this->assertEquals(3600, $paymentGateway->totalCharges());
 
+        $this->assertEquals(3600, $paymentGateway->totalChargesFor('test_acct_1234'));
     }
 }
